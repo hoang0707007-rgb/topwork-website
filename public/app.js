@@ -34,7 +34,7 @@ el('job-region').addEventListener('change',()=>{jobLimit=9;renderJobs();});
 el('see-more').addEventListener('click',()=>{jobLimit+=9;renderJobs();});
 function renderCompanies(){
 const query=norm(el('company-query').value),region=el('company-region').value;
-const list=companies.filter(c=>(!region||c.region===region)&&(!query||norm([c.name,c.region,c.place].join(' ')).includes(query)));
+const onlyChecked=Boolean(document.getElementById('only-checked')?.checked);const list=companies.filter(c=>(!onlyChecked||c.verification)&&(!region||c.region===region)&&(!query||norm([c.name,c.region,c.place].join(' ')).includes(query)));
 el('company-total').textContent=list.length+' mục';
 el('company-list').innerHTML=list.length?list.map(c=>'<button class="company-item" data-company="'+escapeHTML(c.id)+'"><span class="company-avatar">'+escapeHTML(c.name.slice(0,1))+'</span><span class="copy"><b>'+escapeHTML(c.name)+'</b><small>'+escapeHTML(c.region)+' · Chờ duyệt</small></span><span class="arrow">↗</span></button>').join(''):'<p class="empty">Không có công ty nào phù hợp.</p>';
 document.querySelectorAll('[data-company]').forEach(b=>b.addEventListener('click',()=>showCompany(b.dataset.company)));
@@ -53,7 +53,7 @@ function showCompany(id){
 const c=byId.get(id);if(!c)return;
 const count=jobs.filter(j=>j.cid===id).length;
 const url='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(c.name+' '+(c.place||c.region));
-modalOpen('<span class="detail-tag">DANH MỤC DOANH NGHIỆP • CHỜ DUYỆT</span><h2 id="modal-title">'+escapeHTML(c.name)+'</h2><p>Danh mục này không chứng minh quan hệ hợp tác hoặc tình trạng tuyển dụng hiện tại.</p><div class="detail-row"><b>Khu vực</b>'+escapeHTML(c.region)+'</div><div class="detail-row"><b>Địa điểm tham khảo</b>'+escapeHTML(c.place||'Chưa rõ')+'</div><div class="detail-row"><b>Hồ sơ vị trí tham khảo</b>'+count+' mục, chưa xác minh</div><div class="detail-row"><b>Chú ý</b>Vị trí ghim của khu vực không phải địa chỉ chính xác nhà máy.</div><a class="map-link" target="_blank" rel="noopener noreferrer" href="'+escapeHTML(url)+'">Tìm trên Google Maps ↗</a>');
+modalOpen('<span class="detail-tag">DANH MỤC DOANH NGHIỆP • CHỜ DUYỆT</span><h2 id="modal-title">'+escapeHTML(c.name)+'</h2><p>Danh mục này không chứng minh quan hệ hợp tác hoặc tình trạng tuyển dụng hiện tại.</p><div class="detail-row"><b>Khu vực</b>'+escapeHTML(c.region)+'</div><div class="detail-row"><b>Địa điểm tham khảo</b>'+escapeHTML(c.place||'Chưa rõ')+'</div><div class="detail-row"><b>Kiểm tra địa điểm</b>'+(c.verification?'Đã có nguồn đối chiếu địa điểm ban đầu; chưa xác nhận đang tuyển':'Địa điểm chưa được đối chiếu đầy đủ')+'</div><div class="detail-row"><b>Hồ sơ vị trí tham khảo</b>'+count+' mục, chưa xác minh</div><div class="detail-row"><b>Chú ý</b>Vị trí ghim của khu vực không phải địa chỉ chính xác nhà máy.</div><a class="map-link" target="_blank" rel="noopener noreferrer" href="'+escapeHTML(url)+'">Tìm trên Google Maps ↗</a>');
 }
 el('search-form').addEventListener('submit',e=>{e.preventDefault();el('job-query').value=el('hero-keyword').value;el('job-region').value=el('hero-region').value;jobLimit=9;renderJobs();el('jobs').scrollIntoView({behavior:'smooth'});});
 el('menu').addEventListener('click',()=>{const open=el('nav').classList.toggle('open');el('menu').setAttribute('aria-expanded',String(open));});
@@ -70,8 +70,10 @@ refreshMarkers();
 function refreshMarkers(){
 if(!map||!markerLayer)return;
 markerLayer.clearLayers();const region=el('company-region').value,points=[];
-for(const [name,items] of byRegion.entries()){
+for(const [name,allItems] of byRegion.entries()){
 if(region&&region!==name)continue;
+const items=document.getElementById('only-checked')?.checked?allItems.filter(c=>c.verification):allItems;
+if(!items.length)continue;
 const c=items.find(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng)&&x.lat&&x.lng);if(!c)continue;
 const coordinates=[c.lat,c.lng];points.push(coordinates);
 const marker=L.circleMarker(coordinates,{radius:Math.min(21,9+Math.sqrt(items.length)*1.5),fillColor:'#0d8fbf',fillOpacity:.86,color:'#fff',weight:3});
