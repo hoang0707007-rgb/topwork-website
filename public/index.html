@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="TOPwork VINA — kết nối cơ hội việc làm và thông tin doanh nghiệp theo khu vực.">
+<meta name="theme-color" content="#093c61">
+<title>TOPwork VINA | Kết nối cơ hội việc làm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="notice"><div class="wrap notice-in"><span>TOPwork VINA <i>•</i> ELEVATING YOUR WORKFORCE</span><strong>DEMO • THÔNG TIN CHỜ DUYỆT</strong></div></div>
+<header class="site-header"><div class="wrap head">
+<a class="brand" href="#home" aria-label="TOPwork VINA trang chủ"><span class="brand-icon">↗</span><span class="brand-word"><b>TOP<span>work</span> <em>VINA</em></b><small>ELEVATING YOUR WORKFORCE</small></span></a>
+<nav id="nav"><a href="#jobs">Việc làm</a><a href="#regions">Khu vực</a><a href="#company-map">Bản đồ doanh nghiệp</a><a href="#about">Về chúng tôi</a><a href="#contact">Liên hệ</a></nav>
+<a class="nav-action" href="#company-map">Khám phá bản đồ <span>↗</span></a>
+<button id="menu" class="menu" aria-label="Mở menu" aria-expanded="false">☰</button>
+</div></header>
+<main id="home">
+<section class="hero"><div class="wrap hero-grid">
+<div><div class="hero-overline"><span class="pulse"></span> CÙNG TOPWORK VINA KẾT NỐI CƠ HỘI</div>
+<h1>Đúng công việc.<br><span>Đúng tương lai.</span></h1>
+<p>Khám phá doanh nghiệp, công việc và khu vực làm việc trên một nền tảng dễ sử dụng. Bản demo đang hoàn thiện nội dung trước khi tuyển dụng chính thức.</p>
+<form id="search-form" class="search"><label><span>⌕</span><input id="hero-keyword" placeholder="Tìm công ty hoặc vị trí công việc" aria-label="Từ khóa tìm kiếm"></label><label><span>⌖</span><select id="hero-region" aria-label="Khu vực"><option value="">Tất cả khu vực</option></select></label><button type="submit">Tìm kiếm →</button></form>
+<div class="trends"><span>Khu vực phổ biến</span><button data-region-button="BẮC NINH">Bắc Ninh</button><button data-region-button="HẢI PHÒNG">Hải Phòng</button><button data-region-button="HÀ NỘI">Hà Nội</button></div>
+</div><div class="hero-art" aria-hidden="true"><div class="art-pill">TÌM KIẾM • KẾT NỐI • PHÁT TRIỂN</div><svg viewBox="0 0 390 330"><circle cx="180" cy="166" r="122" fill="none" stroke="#b7d7e8" stroke-width="2"/><circle cx="180" cy="166" r="94" fill="#e1f4fc"/><circle cx="180" cy="166" r="57" fill="#c3e9f9"/><path d="M88 269C183 220 222 145 264 60L246 63L293 12L298 96L279 78C235 185 173 239 88 269Z" fill="#058bbd"/><circle cx="149" cy="126" r="20" fill="#22b0d8"/><path d="M75 280C126 263 147 239 176 201" fill="none" stroke="#98c2d6" stroke-width="13" stroke-linecap="round"/><circle cx="73" cy="85" r="11" fill="#59bddc"/><circle cx="323" cy="240" r="9" fill="#59bddc"/></svg><div class="art-note"><span>✓</span><div><b>Tiếp cận thông tin rõ ràng hơn</b><small>Tra cứu theo doanh nghiệp và vị trí</small></div></div></div></div>
+</section>
+<section class="stats"><div class="wrap stats-row"><div><b id="stat-companies">—</b><span>Mục trong danh mục</span></div><div><b id="stat-regions">—</b><span>Khu vực tham khảo</span></div><div><b id="stat-jobs">—</b><span>Hồ sơ vị trí chờ duyệt</span></div><div class="stat-disclaimer">ⓘ Danh mục không xác nhận doanh nghiệp đang tuyển hoặc là đối tác của TOPwork VINA.</div></div></section>
+<section id="regions" class="section"><div class="wrap"><div class="section-heading"><div><div class="eyebrow">KHÁM PHÁ THEO VỊ TRÍ</div><h2>Doanh nghiệp <span>theo khu vực</span></h2><p>Chọn địa bàn phù hợp để khám phá danh mục trên bản đồ.</p></div><a href="#company-map">Xem bản đồ →</a></div><div id="region-cards" class="region-cards"></div></div></section>
+<section id="jobs" class="section pale"><div class="wrap"><div class="section-heading"><div><div class="eyebrow">VỊ TRÍ THAM KHẢO</div><h2>Cơ hội <span>đang được rà soát</span></h2><p>Những thông tin dưới đây chưa được xác nhận là đơn tuyển dụng hiện hành.</p></div><div class="draft-pill">CHƯA NHẬN HỒ SƠ</div></div><div class="filters"><input id="job-query" placeholder="⌕ Tìm tên công ty, vị trí..."><select id="job-region"><option value="">Tất cả khu vực</option></select><span id="job-total"></span></div><div id="job-cards" class="job-cards"></div><div class="center"><button id="see-more" class="outline">Xem thêm vị trí ↓</button></div></div></section>
+<section id="company-map" class="section"><div class="wrap"><div class="section-heading"><div><div class="eyebrow">BẢN ĐỒ DOANH NGHIỆP</div><h2>Khám phá <span>các khu vực làm việc</span></h2><p>Ghim chỉ hiển thị tâm khu vực ước lượng, không phải địa chỉ chính xác của công ty.</p></div></div><div class="map-shell"><div class="map-main"><div id="map"></div><div class="map-warning">● Ghim là tâm khu vực tham khảo · Không dùng để chỉ đường</div></div><aside class="directory"><div class="directory-head"><b>Tra cứu doanh nghiệp</b><small id="company-total"></small></div><input id="company-query" placeholder="⌕ Nhập tên công ty..."><select id="company-region"><option value="">Tất cả khu vực</option></select><div id="company-list" class="company-list"></div></aside></div></div></section>
+<section id="about" class="section about"><div class="wrap about-grid"><div><div class="eyebrow">CÙNG TOPWORK VINA</div><h2>Con người phù hợp.<br><span>Công việc phù hợp.</span></h2><p>Chúng tôi hướng tới việc kết nối ứng viên và doanh nghiệp qua thông tin rõ ràng, thuận tiện và có thể kiểm chứng. Từng đơn tuyển sẽ được xác nhận trước khi công bố.</p><a class="cta" href="#contact">Liên hệ TOPwork →</a></div><div class="values"><article><b>01</b><div><strong>Minh bạch</strong><p>Thông tin tham khảo được phân biệt rõ với nội dung đã duyệt.</p></div></article><article><b>02</b><div><strong>Dễ tra cứu</strong><p>Lọc theo tỉnh, công ty và vị trí chỉ trong vài thao tác.</p></div></article><article><b>03</b><div><strong>An toàn</strong><p>Chưa thu thập thông tin ứng viên trên bản demo.</p></div></article></div></div></section>
+<section id="contact" class="contact"><div class="wrap contact-grid"><div><div class="eyebrow">LIÊN HỆ CHÚNG TÔI</div><h2>Bắt đầu hành trình<br><span>cùng TOPwork.</span></h2></div><div class="contact-card"><h3>CÔNG TY TNHH TOPWORK VINA</h3><p>☎ <a href="tel:0327661379">0327 661 379</a></p><p>✉ <a href="mailto:topworkvina@gmail.com">topworkvina@gmail.com</a></p><p>⌖ TDP Chùa, phường Nếnh, tỉnh Bắc Ninh, Việt Nam</p><small>Mã số thuế: 2401043607</small></div></div></section>
+</main><footer><div class="wrap footer"><div><b class="footer-logo">TOP<span>work</span> VINA</b><p>ELEVATING YOUR WORKFORCE</p><small>© 2026 TOPwork VINA. Website demo.</small></div><div><b>Điều hướng</b><a href="#jobs">Việc làm</a><a href="#company-map">Bản đồ doanh nghiệp</a><a href="#contact">Liên hệ</a></div><div><b>Thông báo</b><p>Dữ liệu công ty và vị trí chỉ để thử nghiệm. Không có thông tin nào chứng minh quan hệ hợp tác hay việc tuyển dụng hiện tại.</p></div></div></footer>
+<div id="modal" class="modal" hidden><div class="backdrop" data-close></div><div role="dialog" aria-modal="true" aria-labelledby="modal-title" class="dialog"><button data-close class="close" aria-label="Đóng">×</button><div id="modal-body"></div></div></div>
+<script src="/data.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/app.js"></script>
+</body></html>
