@@ -1,28 +1,22 @@
-# TOPwork VINA — Website xem thử miễn phí
+# TOPwork VINA — Bản demo website miễn phí
 
-Đây là phiên bản **demo công khai** của TOPwork VINA, sử dụng GitHub Pages miễn phí từ repository public. Nội dung chưa được duyệt để tuyển dụng chính thức.
+**Website đã tự triển khai trên GitHub Pages:** https://hoang0707007-rgb.github.io/topwork-website/
 
-## Kích hoạt GitHub Pages
+## Trạng thái
 
-1. Mở **Settings → Pages** tại: https://github.com/hoang0707007-rgb/topwork-website/settings/pages
-2. Tại **Build and deployment**, chọn **Source: Deploy from a branch**.
-3. Chọn **Branch: main** và **Folder: /(root)**, rồi nhấn **Save**.
-4. Sau khi GitHub xuất bản và báo trạng thái thành công, chọn **Visit site** trong trang Pages để lấy URL thật.
+- Nguồn: repository public `hoang0707007-rgb/topwork-website`.
+- Quy trình tự động: `.github/workflows/pages.yml`; chạy khi push lên nhánh `main`.
+- Trang chủ: `public/index.html`, stylesheet `public/styles.css`, logic `public/app.js`, dữ liệu `public/data.js`.
+- Mọi thay đổi trên `main` sẽ tự yêu cầu triển khai; theo dõi trong tab Actions.
 
-Trang gốc `index.html` chuyển đến `public/index.html`. Các file HTML/CSS/JS và bản sao danh mục công khai đã nằm trong thư mục `public/`.
+## Giới hạn bản demo
 
-Đường dẫn GitHub Pages dự kiến (chỉ sử dụng sau khi **Visit site** xác nhận):
-https://hoang0707007-rgb.github.io/topwork-website/
+- Danh mục **91 mục doanh nghiệp** và **91 hồ sơ vị trí tham khảo**, không xác nhận còn tuyển hoặc hợp tác.
+- Bản đồ sử dụng Leaflet/OpenStreetMap, ghim là **tâm khu vực**; có nút tìm tên công ty trên Google Maps, chưa có Google Maps nhúng bằng API key.
+- `public/data.js` là bản sao dữ liệu tham khảo tại thời điểm phát hành, **không tự đồng bộ trực tiếp Google Sheets**.
+- Website chưa mở nhận hồ sơ ứng viên; không chứa dữ liệu CRM riêng tư, số điện thoại người đón, thông tin ngân hàng hay bí mật API.
+- Không dùng mức lương, thưởng và điều kiện tuyển dụng chưa xác minh để đăng tuyển thực tế.
 
-## Hiện trạng
+## Nâng cấp tiếp theo
 
-- Danh mục 91 mục doanh nghiệp và 91 hồ sơ vị trí tham khảo, **không phải đơn tuyển đã xác nhận**.
-- Lọc theo công ty/khu vực, bản đồ bằng Leaflet/OpenStreetMap, liên kết tìm địa điểm trên Google Maps.
-- Ghim thể hiện **tâm khu vực**; không dùng để chỉ đường đến nhà máy.
-- Bản sao dữ liệu trong `public/data.js` là snapshot; **chưa tự động đồng bộ Google Sheets**.
-- Không nhận hồ sơ trực tuyến, không thu thập CCCD/số điện thoại ứng viên, không chứa khóa API, thông tin ngân hàng hoặc dữ liệu nội bộ.
-- Những thông tin đang chờ duyệt không đồng nghĩa đã hợp tác hoặc đang tuyển.
-
-## Tùy chọn Render
-
-Render có thể yêu cầu thông tin thanh toán tùy cấu hình tài khoản. **GitHub Pages** là lựa chọn được ưu tiên cho demo miễn phí này.
+Xác minh và phê duyệt nội dung trên Google Sheets; bổ sung backend bảo mật để đồng bộ nội dung được duyệt và thiết lập CRM tuyển dụng có phân quyền.
