@@ -2,6 +2,12 @@
 const DATA=window.TOPWORK_DATA||{companies:[],jobs:[]};
 const companies=DATA.companies||[], jobs=DATA.jobs||[];
 const byId=new Map(companies.map(c=>[c.id,c]));
+const payInfo=window.TOPWORK_PAY_REFERENCE?.items||{};
+const payFor=job=>payInfo[job?.id]||{};
+const salaryCount=jobs.filter(j=>Boolean(payFor(j).salary)).length;
+const bonusCount=jobs.filter(j=>Boolean(payFor(j).bonus)).length;
+const factoryCount=jobs.filter(j=>Boolean(payFor(j).location)).length;
+
 const el=id=>document.getElementById(id);
 const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const norm=s=>String(s||'').normalize('NFC').toLocaleLowerCase('vi');
@@ -23,20 +29,47 @@ document.querySelectorAll('[data-region]').forEach(x=>x.addEventListener('click'
 document.querySelectorAll('[data-region-button]').forEach(x=>x.addEventListener('click',()=>setRegion(x.dataset.regionButton)));
 function renderJobs(){
 const query=norm(el('job-query').value),region=el('job-region').value;
-const list=jobs.filter(j=>{const c=byId.get(j.cid)||{};return (!region||c.region===region)&&(!query||norm([c.name,j.title,c.region].join(' ')).includes(query));});
+const salaryOnly=Boolean(el('has-salary')?.checked),bonusOnly=Boolean(el('has-bonus')?.checked);
+const list=jobs.filter(j=>{
+ const c=byId.get(j.cid)||{},p=payFor(j);
+ return (!region||c.region===region)
+ && (!salaryOnly||Boolean(p.salary))
+ && (!bonusOnly||Boolean(p.bonus))
+ && (!query||norm([c.name,j.title,c.region,c.place,p.salary,p.bonus,p.role,p.location].join(' ')).includes(query));
+});
 el('job-total').textContent=list.length+' mục';
-el('job-cards').innerHTML=list.length?list.slice(0,jobLimit).map(j=>{const c=byId.get(j.cid)||{};return '<article class="job-card"><div class="job-top"><span class="job-avatar">'+escapeHTML((c.name||'T').slice(0,1))+'</span><span class="job-badge">CHỜ XÁC MINH</span></div><h3>'+escapeHTML(j.title)+'</h3><p>'+escapeHTML(c.name||'Doanh nghiệp tham khảo')+'</p><small>⌖ '+escapeHTML(c.region||'Chưa rõ khu vực')+'</small><div class="job-foot"><small>Chưa mở nhận hồ sơ</small><button data-job="'+escapeHTML(j.id)+'">Xem chi tiết ↗</button></div></article>';}).join(''):'<div class="empty">Không tìm thấy vị trí phù hợp. Hãy đổi từ khóa hoặc khu vực.</div>';
+el('job-cards').innerHTML=list.length?list.slice(0,jobLimit).map(j=>{
+const c=byId.get(j.cid)||{},p=payFor(j);
+const location=p.location||c.place||c.region||'Chưa rõ';
+const salary=p.salary||'Chưa ghi rõ trong Excel';
+const bonus=p.bonus||'Chưa ghi thưởng cụ thể';
+const role=p.role||j.title;
+return '<article class="job-card pay-job-card"><div class="job-top"><span class="job-avatar">'+escapeHTML((c.name||'T').slice(0,1))+'</span><span class="job-badge">SỐ LIỆU CŨ · CHƯA KIỂM CHỨNG</span></div>'
++'<div class="factory-location">⌖ '+escapeHTML(c.region||'Chưa rõ khu vực')+' <span>·</span> '+escapeHTML(location)+'</div>'
++'<h3>'+escapeHTML(c.name||'Doanh nghiệp tham khảo')+'</h3>'
++'<p class="role-text">'+escapeHTML(role)+'</p>'
++'<div class="pay-details"><div><span class="pay-label">LCB / PHỤ CẤP / CÔNG NHẬT THEO FILE</span><strong class="salary-value">'+escapeHTML(salary)+'</strong></div><div class="bonus-area"><span class="pay-label">THƯỞNG GHI TRONG FILE</span><strong>'+escapeHTML(bonus)+'</strong></div></div>'
++'<div class="job-foot"><small>Chưa xác nhận còn tuyển · Nguồn Excel nội bộ</small><button data-job="'+escapeHTML(j.id)+'">Chi tiết ↗</button></div></article>';
+}).join(''):'<div class="empty">Không tìm thấy nhà máy hoặc mức thu nhập phù hợp. Hãy thay đổi từ khóa, khu vực hay bộ lọc.</div>';
 el('see-more').hidden=list.length<=jobLimit;
 document.querySelectorAll('[data-job]').forEach(b=>b.addEventListener('click',()=>showJob(b.dataset.job)));
 }
 el('job-query').addEventListener('input',()=>{jobLimit=9;renderJobs();});
 el('job-region').addEventListener('change',()=>{jobLimit=9;renderJobs();});
+for(const id of ['has-salary','has-bonus'])el(id)?.addEventListener('change',()=>{jobLimit=9;renderJobs();});
 el('see-more').addEventListener('click',()=>{jobLimit+=9;renderJobs();});
 function renderCompanies(){
 const query=norm(el('company-query').value),region=el('company-region').value;
-const onlyChecked=Boolean(document.getElementById('only-checked')?.checked);const list=companies.filter(c=>(!onlyChecked||c.verification)&&(!region||c.region===region)&&(!query||norm([c.name,c.region,c.place].join(' ')).includes(query)));
+const onlyChecked=Boolean(el('only-checked')?.checked);
+const list=companies.filter(c=>(!onlyChecked||c.verification)&&(!region||c.region===region)&&(!query||norm([c.name,c.region,c.place,...jobs.filter(j=>j.cid===c.id).map(j=>payFor(j).role)].join(' ')).includes(query)));
 el('company-total').textContent=list.length+' mục';
-el('company-list').innerHTML=list.length?list.map(c=>'<button class="company-item" data-company="'+escapeHTML(c.id)+'"><span class="company-avatar">'+escapeHTML(c.name.slice(0,1))+'</span><span class="copy"><b>'+escapeHTML(c.name)+'</b><small>'+escapeHTML(c.region)+' · Chờ duyệt</small></span><span class="arrow">↗</span></button>').join(''):'<p class="empty">Không có công ty nào phù hợp.</p>';
+el('company-list').innerHTML=list.length?list.map(c=>{
+ const j=jobs.find(j=>j.cid===c.id),p=payFor(j);
+ const location=p.location||c.place||'Khu vực đang xác minh';
+ const salary=p.salary?'<span class="company-pay">Lương theo file: '+escapeHTML(p.salary)+'</span>':'';
+ const bonus=p.bonus?'<span class="company-bonus">Thưởng theo file: '+escapeHTML(p.bonus)+'</span>':'';
+ return '<button class="company-item" data-company="'+escapeHTML(c.id)+'"><span class="company-avatar">'+escapeHTML(c.name.slice(0,1))+'</span><span class="copy"><b>'+escapeHTML(c.name)+'</b><small>'+escapeHTML(c.region)+' · '+escapeHTML(location)+'</small>'+salary+bonus+'</span><span class="arrow">↗</span></button>';
+}).join(''):'<p class="empty">Không có công ty nào phù hợp.</p>';
 document.querySelectorAll('[data-company]').forEach(b=>b.addEventListener('click',()=>showCompany(b.dataset.company)));
 }
 el('company-query').addEventListener('input',renderCompanies);
@@ -46,14 +79,45 @@ function modalClose(){el('modal').hidden=true;document.body.style.overflow='';}
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',modalClose));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')modalClose();});
 function showJob(id){
-const j=jobs.find(v=>v.id===id);if(!j)return;const c=byId.get(j.cid)||{};
-modalOpen('<span class="detail-tag">HỒ SƠ VỊ TRÍ • CHƯA DUYỆT</span><h2 id="modal-title">'+escapeHTML(j.title)+'</h2><p>Thông tin tham khảo từ danh mục nội bộ. Chưa xác nhận đây là đơn tuyển dụng hiện hành.</p><div class="detail-row"><b>Doanh nghiệp</b>'+escapeHTML(c.name||'Chưa cập nhật')+'</div><div class="detail-row"><b>Khu vực</b>'+escapeHTML(c.region||'Chưa rõ')+'</div><div class="detail-row"><b>Lương, thưởng, số lượng và thời hạn tuyển</b>Chưa được xác minh để công khai.</div><div class="detail-row"><b>Ứng tuyển</b>Chưa mở nhận hồ sơ trên website demo.</div>');
+const j=jobs.find(v=>v.id===id);if(!j)return;const c=byId.get(j.cid)||{},p=payFor(j);
+const row=(label,value)=>'<div class="detail-row"><b>'+escapeHTML(label)+'</b>'+escapeHTML(value)+'</div>';
+modalOpen('<span class="detail-tag">TRÍCH BẢNG EXCEL GỐC · CHƯA XÁC MINH</span><h2 id="modal-title">'+escapeHTML(c.name||j.title)+'</h2>'
++'<p class="detail-warning">Chỉ là thông tin từ Excel TOPWORK cung cấp, không có ngày hiệu lực. Không xác nhận doanh nghiệp đang tuyển, chế độ còn áp dụng hoặc TOPwork là đối tác của doanh nghiệp.</p>'
++row('Công việc / vị trí',p.role||j.title)
++row('Nhóm khu vực trong file',c.region||'Chưa có')
++row('Nhà máy / địa chỉ theo file',p.location||c.place||'Chưa có địa chỉ cụ thể')
++row('Loại hình làm việc theo file',p.employment||'Chưa có')
++row('Lương cơ bản / phụ cấp / công nhật',p.salary||'Không ghi rõ trong file')
++row('Khoản thưởng theo file (chưa xác minh)',p.bonus||'Không ghi rõ khoản thưởng')
++(p.daily_rate?row('Công nhật theo ca',p.daily_rate):'')
++row('Số lượng cần tuyển và thời hạn', 'Không có thông tin đã xác minh')
++row('Trạng thái', 'DỮ LIỆU THAM KHẢO · Chưa xác nhận đang tuyển')
++'<p class="detail-source">Nguồn: Thông Tin DS CTY.xlsx. LCB = lương cơ bản; PC = phụ cấp; TR = triệu đồng; k = nghìn đồng. Thưởng có thể có điều kiện hoặc đã hết hiệu lực.</p>'
++'<a class="map-link" href="tel:0327661379">Gọi TOPwork để xác nhận →</a>');
 }
 function showCompany(id){
 const c=byId.get(id);if(!c)return;
-const count=jobs.filter(j=>j.cid===id).length;
-const url='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(c.name+' '+(c.place||c.region));
-modalOpen('<span class="detail-tag">DANH MỤC DOANH NGHIỆP • CHỜ DUYỆT</span><h2 id="modal-title">'+escapeHTML(c.name)+'</h2><p>Danh mục này không chứng minh quan hệ hợp tác hoặc tình trạng tuyển dụng hiện tại.</p><div class="detail-row"><b>Khu vực</b>'+escapeHTML(c.region)+'</div><div class="detail-row"><b>Địa điểm tham khảo</b>'+escapeHTML(c.place||'Chưa rõ')+'</div><div class="detail-row"><b>Kiểm tra địa điểm</b>'+(c.verification?'Đã có nguồn đối chiếu địa điểm ban đầu; chưa xác nhận đang tuyển':'Địa điểm chưa được đối chiếu đầy đủ')+'</div><div class="detail-row"><b>Hồ sơ vị trí tham khảo</b>'+count+' mục, chưa xác minh</div><div class="detail-row"><b>Chú ý</b>Vị trí ghim của khu vực không phải địa chỉ chính xác nhà máy.</div><a class="map-link" target="_blank" rel="noopener noreferrer" href="'+escapeHTML(url)+'">Tìm trên Google Maps ↗</a>');
+const records=jobs.filter(j=>j.cid===id),p=payFor(records[0]);
+const url='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(c.name+' '+(p.location||c.place||c.region));
+const row=(label,value)=>'<div class="detail-row"><b>'+escapeHTML(label)+'</b>'+escapeHTML(value)+'</div>';
+modalOpen('<span class="detail-tag">HỒ SƠ NHÀ MÁY · DỮ LIỆU CŨ CHỜ DUYỆT</span><h2 id="modal-title">'+escapeHTML(c.name)+'</h2>'
++'<p class="detail-warning">Mức lương, thưởng và trạng thái tuyển chưa được doanh nghiệp xác nhận; địa điểm có thể đã thay đổi.</p>'
++row('Khu vực trong file',c.region)
++row('Địa điểm nhà máy theo Excel',p.location||c.place||'Chưa rõ')
++row('Vị trí tham khảo',p.role||records[0]?.title||'Chưa ghi công việc')
++row('LCB / phụ cấp / công nhật',p.salary||'Chưa có số liệu đọc được')
++row('Thưởng ghi trong file',p.bonus||'Chưa ghi')
++row('Đối chiếu địa điểm',c.verification?'Có nguồn đối chiếu ban đầu (không đồng nghĩa đang tuyển)':'Chưa đối chiếu đầy đủ')
++'<div class="dialog-actions"><button class="map-link" id="company-job-link" type="button">Xem chi tiết công việc ↗</button><a class="map-link outline-link" target="_blank" rel="noopener noreferrer" href="'+escapeHTML(url)+'">Tìm trên Google Maps ↗</a></div>');
+el('company-job-link').addEventListener('click',()=>{
+ modalClose();
+ el('job-query').value=c.name;
+ el('job-region').value=c.region;
+ if(el('has-salary'))el('has-salary').checked=false;
+ if(el('has-bonus'))el('has-bonus').checked=false;
+ jobLimit=9;renderJobs();
+ el('jobs').scrollIntoView({behavior:'smooth'});
+});
 }
 el('search-form').addEventListener('submit',e=>{e.preventDefault();el('job-query').value=el('hero-keyword').value;el('job-region').value=el('hero-region').value;jobLimit=9;renderJobs();el('jobs').scrollIntoView({behavior:'smooth'});});
 el('menu').addEventListener('click',()=>{const open=el('nav').classList.toggle('open');el('menu').setAttribute('aria-expanded',String(open));});
@@ -84,4 +148,7 @@ markerLayer.addLayer(marker);
 if(points.length>1)map.fitBounds(points,{padding:[35,35],maxZoom:8});
 else if(points.length===1)map.setView(points[0],9);
 }
+if(el('pay-with-salary'))el('pay-with-salary').textContent=salaryCount+' mục có thông tin lương/công nhật';
+if(el('pay-with-bonus'))el('pay-with-bonus').textContent=bonusCount+' mục ghi thưởng';
+if(el('pay-with-factory'))el('pay-with-factory').textContent=factoryCount+' mục ghi địa điểm';
 renderJobs();renderCompanies();createMap();
