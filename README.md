@@ -1,7 +1,28 @@
-# TOPwork VINA — Website tuyển dụng (bản demo)
+# TOPwork VINA — Website xem thử miễn phí
 
-Đây là kho mã nguồn website TOPwork VINA phiên bản xem thử, chưa nhận hồ sơ ứng viên và không công bố các đơn tuyển dụng chưa được xác minh.
+Đây là phiên bản **demo công khai** của TOPwork VINA, sử dụng GitHub Pages miễn phí từ repository public. Nội dung chưa được duyệt để tuyển dụng chính thức.
 
-**Lưu ý**: Tên và khu vực doanh nghiệp thuộc danh mục tham khảo; không ngụ ý đã hợp tác hoặc đang tuyển. Không lưu dữ liệu cá nhân, số điện thoại ứng viên, mật khẩu, khóa Google Maps hay tài khoản ngân hàng trong repo.
+## Kích hoạt GitHub Pages
 
-Ứng dụng được triển khai thành static website trên Render. Google Sheets là nguồn quản lý nội dung; quy trình tự động đồng bộ nội dung đã được duyệt sẽ được cấu hình riêng sau khi có quyền xác thực phù hợp.
+1. Mở **Settings → Pages** tại: https://github.com/hoang0707007-rgb/topwork-website/settings/pages
+2. Tại **Build and deployment**, chọn **Source: Deploy from a branch**.
+3. Chọn **Branch: main** và **Folder: /(root)**, rồi nhấn **Save**.
+4. Sau khi GitHub xuất bản và báo trạng thái thành công, chọn **Visit site** trong trang Pages để lấy URL thật.
+
+Trang gốc `index.html` chuyển đến `public/index.html`. Các file HTML/CSS/JS và bản sao danh mục công khai đã nằm trong thư mục `public/`.
+
+Đường dẫn GitHub Pages dự kiến (chỉ sử dụng sau khi **Visit site** xác nhận):
+https://hoang0707007-rgb.github.io/topwork-website/
+
+## Hiện trạng
+
+- Danh mục 91 mục doanh nghiệp và 91 hồ sơ vị trí tham khảo, **không phải đơn tuyển đã xác nhận**.
+- Lọc theo công ty/khu vực, bản đồ bằng Leaflet/OpenStreetMap, liên kết tìm địa điểm trên Google Maps.
+- Ghim thể hiện **tâm khu vực**; không dùng để chỉ đường đến nhà máy.
+- Bản sao dữ liệu trong `public/data.js` là snapshot; **chưa tự động đồng bộ Google Sheets**.
+- Không nhận hồ sơ trực tuyến, không thu thập CCCD/số điện thoại ứng viên, không chứa khóa API, thông tin ngân hàng hoặc dữ liệu nội bộ.
+- Những thông tin đang chờ duyệt không đồng nghĩa đã hợp tác hoặc đang tuyển.
+
+## Tùy chọn Render
+
+Render có thể yêu cầu thông tin thanh toán tùy cấu hình tài khoản. **GitHub Pages** là lựa chọn được ưu tiên cho demo miễn phí này.
