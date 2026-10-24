@@ -21,6 +21,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Configure Pages
         uses: actions/configure-pages@v5
+      - name: Validate TOPwork VINA assets
+        run: |
+          node --check public/app.js
+          node --check public/upgrade.js
+          node --check public/data.js
+          node scripts/verify.mjs
       - name: Upload website
         uses: actions/upload-pages-artifact@v4
         with:
